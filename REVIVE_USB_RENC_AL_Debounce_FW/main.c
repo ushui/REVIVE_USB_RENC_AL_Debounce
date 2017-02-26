@@ -1,5 +1,7 @@
 // USB HID core
 /*
+ * RENC Debounce AL ver 1.1 (2016/02/24)
+ *   入力値の増減のアルゴリズムを変更した。
  * RENC Debounce AL ver 1.0 (2016/01/22)
  *   「REVIVE USB RENC Debounce S/D ver 1.1」のスライダー/ダイヤル入力をレバー入力に置き換え直し、レバー入力の値の範囲を-128～127に変えた。
  */
@@ -127,7 +129,7 @@ void YourLowPriorityISRCode();
 
 /** VARIABLES ******************************************************/
 #pragma udata
-char c_version[]="AL1.0";
+char c_version[]="AL1.1";
 BYTE mouse_buffer[4];
 BYTE joystick_buffer[4];
 BYTE keyboard_buffer[8]; 
@@ -147,10 +149,6 @@ unsigned int renc_pre_result = 0;
 
 //レバー入力フラグ
 unsigned char flg_input_lever = 0;
-//レバー入力カウンタ閾値（0～3）
-const unsigned char LEVER_COUNTER_MAX = 3;
-//レバー入力カウンタ（MAXになったら入力値を増やす）
-unsigned char lever_counter = 0;
 
 char mouse_move_up;
 char mouse_move_down;
@@ -423,6 +421,56 @@ unsigned char ToSendDataBuffer[64];
 			
 			button_state_set2 = (unsigned char)(button_state_set_full >> 8);
 			button_state_set1 = (unsigned char)(button_state_set_full);
+            
+            //入力値の増減
+            if(flg_input_lever & 0x01)
+            {
+                flg_input_lever &= ~(0x01);
+                if(joystick_buffer[2] > 0x00)
+                {
+                    joystick_buffer[2]--;
+                }
+                else
+                {
+                    joystick_buffer[2] = 0xff;
+                }
+            }
+            if(flg_input_lever & 0x02)
+            {
+                flg_input_lever &= ~(0x02);
+                if(joystick_buffer[2] < 0xff)
+                {
+                    joystick_buffer[2]++;
+                }
+                else
+                {
+                    joystick_buffer[2] = 0x00;
+                }
+            }
+            if(flg_input_lever & 0x04)
+            {
+                flg_input_lever &= ~(0x04);
+                if(joystick_buffer[3] > 0x00)
+                {
+                    joystick_buffer[3]--;
+                }
+                else
+                {
+                    joystick_buffer[3] = 0xff;
+                }
+            }
+            if(flg_input_lever & 0x08)
+            {
+                flg_input_lever &= ~(0x08);
+                if(joystick_buffer[3] < 0xff)
+                {
+                    joystick_buffer[3]++;
+                }
+                else
+                {
+                    joystick_buffer[3] = 0x00;
+                }
+            }
 		}
 	}	//This return will be a "retfie", since this is in a #pragma interruptlow section 
 #endif
@@ -956,91 +1004,6 @@ void ProcessIO(void)
 	}
    if(!HIDTxHandleBusy(lastTransmission2))
     {
-		if(flg_input_lever & 0x01)
-		{
-			flg_input_lever &= ~(0x01);
-
-			tmp_lever_count = lever_counter & 0x03;
-			tmp_lever_count++;
-			if(tmp_lever_count > LEVER_COUNTER_MAX)
-			{
-				if(joystick_buffer[2] > 0x00)
-				{
-					joystick_buffer[2]--;
-				}
-				else
-				{
-					joystick_buffer[2] = 0xff;
-				}
-				tmp_lever_count = 0x00;
-			}
-			lever_counter &= ~(0x03);
-			lever_counter |= tmp_lever_count;
-		}
-		if(flg_input_lever & 0x02)
-		{
-			flg_input_lever &= ~(0x02);
-
-			tmp_lever_count = lever_counter & 0x0c;
-			tmp_lever_count++;
-			if(tmp_lever_count > LEVER_COUNTER_MAX)
-			{
-				if(joystick_buffer[2] < 0xff)
-				{
-					joystick_buffer[2]++;
-				}
-				else
-				{
-					joystick_buffer[2] = 0x00;
-				}
-				tmp_lever_count = 0x00;
-			}
-			lever_counter &= ~(0x0c);
-			lever_counter |= (tmp_lever_count << 2);
-		}
-		if(flg_input_lever & 0x04)
-		{
-			flg_input_lever &= ~(0x04);
-
-			tmp_lever_count = lever_counter & 0x30;
-			tmp_lever_count++;
-			if(tmp_lever_count > LEVER_COUNTER_MAX)
-			{
-				if(joystick_buffer[3] > 0x00)
-				{
-					joystick_buffer[3]--;
-				}
-				else
-				{
-					joystick_buffer[3] = 0xff;
-				}
-				tmp_lever_count = 0x00;
-			}
-			lever_counter &= ~(0x30);
-			lever_counter |= (tmp_lever_count << 4);
-		}
-		if(flg_input_lever & 0x08)
-		{
-			flg_input_lever &= ~(0x08);
-
-			tmp_lever_count = lever_counter & 0xc0;
-			tmp_lever_count++;
-			if(tmp_lever_count > LEVER_COUNTER_MAX)
-			{
-				if(joystick_buffer[3] < 0xff)
-				{
-					joystick_buffer[3]++;
-				}
-				else
-				{
-					joystick_buffer[3] = 0x00;
-				}
-				tmp_lever_count = 0x00;
-			}
-			lever_counter &= ~(0xc0);
-			lever_counter |= (tmp_lever_count << 6);
-		}
-
         //Buttons
         joystick_input[0] = joystick_buffer[0];
         joystick_input[1] = joystick_buffer[1];
