@@ -26,7 +26,7 @@ URL: <http://a-desk.jp/modules/forum_module/index.php?cat_id=3>
 当ファームウェア以外では動作しません。  
 デフォルトでは「サンプリング周期＝3ms／一致検出回数＝10回」に設定していますが、必要であれば変更することができます。  
 
-![REVIVE USB RENC AL Debounce, Configuration Tool](https://raw.githubusercontent.com/ushui/REVIVE_USB_RENC_AL_Debounce/master/revive_usb_renc_sd_debounce_ct.png)  
+![REVIVE USB RENC AL Debounce, Configuration Tool](https://raw.githubusercontent.com/ushui/REVIVE_USB_RENC_AL_Debounce/master/revive_usb_renc_al_debounce_ct.png)  
 ### サンプリング周期
 チャタリングノイズ除去の効果があります。  
 1～174msまで設定可能で、その設定値ごとにスイッチのON/OFF読み出しを行います。  
@@ -48,7 +48,7 @@ ONからOFFになる時にも回数分OFFであることを確認します。
 A相/B相に割り当てたピンの設定を「マウス/上移動」「マウス/下移動」にしておくなどして、確認しながら少しずつ調整していい塩梅を見つけてください。ボタンとロータリーエンコーダで一致検出回数を個別に設定できるので、サンプリング周期は**適正値がシビアなロータリーエンコーダに合わせてから**ボタンの一致検出回数を増やすことで調整することをおすすめします。  
 動作確認を「EC12E2430803」で行ったため、デフォルト値はこれに合わせています。  
 ### 遅延について
-遅延秒数は**サンプリング周期 * 一致検出回数 - (サンプリング周期 / 2)**でおおよそ求められます。  
+遅延秒数は **サンプリング周期 * 一致検出回数 - (サンプリング周期 / 2)** でおおよそ求められます。  
 ロータリーエンコーダとそれ以外で別になりますのでご注意ください。  
 ## レバーのアナログ入力について
 初期入力値は127で、-128～127の値を送信します。  
@@ -68,9 +68,10 @@ REVIVE USB (PIC18F14K50)
 開発環境：Visual C# 2010 Express  
 開発言語：C#
 ## ソースコードについて
-「Assembly Desk License」ライセンスに準拠します。  
+「[Assembly Desk License](http://bit-trade-one.co.jp/adl/)」ライセンスに準拠します。  
 
 ***
+2017/09/03 Markdown記法の一部誤り等を修正。  
 2017/03/04 アナログ入力に関する記述追加。その他若干修正。  
 2017/02/27 FW ver 1.1に合わせて修正。  
 2017/01/23 readme作成。
