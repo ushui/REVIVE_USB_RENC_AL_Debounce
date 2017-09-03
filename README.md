@@ -68,7 +68,7 @@ REVIVE USB (PIC18F14K50)
 開発環境：Visual C# 2010 Express  
 開発言語：C#
 ## ソースコードについて
-「[Assembly Desk License](http://bit-trade-one.co.jp/adl/)」ライセンスに準拠します。  
+「[Assembly Desk License](https://raw.githubusercontent.com/ushui/REVIVE_USB_RENC_AL_Debounce/master/LICENSE)」ライセンスに準拠します。  
 
 ***
 2017/09/03 Markdown記法の一部誤り等を修正。曖昧だった表現等の校正。  
